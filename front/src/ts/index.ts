@@ -6,3 +6,9 @@ window.addEventListener("load", () => {
   const app = new Application();
   app.start();
 });
+
+window.addEventListener("submit", () => {
+  
+  const app = new Application();
+  app.start();
+});
