@@ -12,7 +12,7 @@ export class Application  {
         console.error('Could not find element with class .task-list');
       }
 
-      
+
       function addTask(taskTitle: string, status: string) {
         // <li>タグを作成
         const task = document.createElement('li');
@@ -54,3 +54,75 @@ export type Tasks = {
   title: string;
   status: number;
 };
+
+export class ApplicationForm  {
+  start = async (): Promise<void> => {
+    async function saveToDB(taskTitle: string, status: string) {
+      const response = await fetch('http://localhost:3000/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: taskTitle,
+          status: status === 'todo' ? 1 : 0,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      } else {
+        console.log(`Task saved: ${taskTitle}`);
+      }
+    }
+
+      function addTask(taskTitle: string, status: string) {
+        // <li>タグを作成
+        const task = document.createElement('li');
+        task.className = 'task task--' + status;
+      
+        // <div class="task__btn">を作成
+        const taskBtn = document.createElement('div');
+        taskBtn.className = 'task__btn';
+        task.appendChild(taskBtn);  // task要素に追加
+      
+        // <div class="task__title">を作成
+        const taskTitleDiv = document.createElement('div');
+        taskTitleDiv.setAttribute('data-test', 'task-title');
+        taskTitleDiv.className = 'task__title';
+        taskTitleDiv.textContent = taskTitle;  // taskのタイトルを設定
+        task.appendChild(taskTitleDiv);  // task要素に追加
+      
+        // 最後に、作成したtaskを<ul>タグ内に追加
+        const taskList = document.querySelector('.task-list');
+        if (taskList) {
+          taskList.appendChild(task);
+        } else {
+          console.error('Could not find element with class .task-list');
+        }
+      }
+      
+      const form = document.querySelector('.form') as HTMLFormElement;
+      console.log(form);
+      if (form) {
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();  // フォームのデフォルトの送信を防ぐ
+      
+          const input = document.querySelector('.form__title') as HTMLInputElement;
+          console.log(input);
+          if (input) {
+            const taskTitle = input.value;
+            if (taskTitle) {
+              addTask(taskTitle, 'todo');
+              saveToDB(taskTitle, 'todo');
+            }
+            input.value = '';  // 入力フィールドをリセット
+          } else {
+            console.error('Could not find input element with class .form__title');
+          }
+        });
+      } else {
+        console.error('Could not find form with class .form');
+      }
+  };
+} 
