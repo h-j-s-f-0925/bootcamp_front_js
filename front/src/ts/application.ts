@@ -126,3 +126,53 @@ export class ApplicationForm  {
       }
   };
 } 
+
+export class ApplicationStatusUpdate {
+  // ステータス更新処理を開始するメソッド
+  start = (): void => {
+    this.addClickListeners(); // クリックイベントのリスナーを設定
+  };
+
+  // クリックイベントのリスナーを設定するメソッド
+  addClickListeners = (): void => {
+    const taskList = document.querySelector('.task-list'); // タスクリストの要素を取得
+    if (!taskList) return; // タスクリストが存在しない場合は処理を終了
+
+    taskList.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement; // イベントの発生元の要素を取得
+      if (!target.classList.contains('task__btn')) return; // クリックされた要素がチェックマークでない場合は処理を終了
+
+      event.preventDefault(); // イベントのデフォルトの挙動をキャンセル
+
+      const task = target.closest('.task'); // クリックされた要素の親要素であるタスク要素を取得
+      if (!task) return; // タスク要素が存在しない場合は処理を終了
+
+      const newStatus = task.classList.contains('task--done') ? 'todo' : 'done'; // タスクの現在のステータスを取得し、逆のステータスに切り替える
+      task.classList.toggle('task--done', newStatus === 'done'); // タスク要素のクラス名に 'task--done' を付与または削除する
+
+      console.log(`Task status updated. New status: ${newStatus}`); // コンソールに新しいステータスを表示
+    });
+  };
+
+  updateTaskStatus = async (taskId: number, newStatus: string): Promise<void> => {
+    const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        status: newStatus === 'done' ? 1 : 0,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    } else {
+      console.log(`Task status updated. New status: ${newStatus}`);
+    }
+  };
+}
+
+
+
+

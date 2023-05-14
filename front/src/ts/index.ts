@@ -2,6 +2,7 @@ import "../css/style.css";
 import "../css/reset.css";
 import {Application} from "./application";
 import {ApplicationForm} from "./application";
+import {ApplicationStatusUpdate} from "./application";
 
 window.addEventListener("load", () => {
   const app = new Application();
@@ -9,4 +10,7 @@ window.addEventListener("load", () => {
 
   const appForm = new ApplicationForm();
   appForm.start();
+
+  const appStatus = new ApplicationStatusUpdate();
+  appStatus.start();
 });

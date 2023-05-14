@@ -27,3 +27,20 @@ app.post('/tasks', async (req, res) => {
 
     res.status(201).json(newTask);  // 保存したタスクをレスポンスとして返す
 });
+
+app.put('/tasks/:taskId', async (req, res) => {
+    const taskId = req.params.taskId;
+    const newStatus = req.body.status;
+    console.log(taskId);
+    console.log(newStatus);
+  
+    try {
+      const db = await databaseManager.getInstance();
+      const sql = 'UPDATE tasks SET status = ? WHERE id = ?';
+      await db.run(sql, [newStatus, taskId]);
+  
+      res.status(200).json({ message: 'Task status updated' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update task status' });
+    }
+  });
