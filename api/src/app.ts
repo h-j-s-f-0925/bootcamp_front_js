@@ -44,3 +44,19 @@ app.put('/tasks/:taskId', async (req, res) => {
       res.status(500).json({ error: 'Failed to update task status' });
     }
   });
+
+  app.delete('/tasks/:taskId', async (req, res) => {
+    const taskId = req.params.taskId;
+    console.log(taskId);
+    console.log(parseInt(taskId));
+    try {
+      const db = await databaseManager.getInstance();
+      const sql = 'DELETE FROM tasks WHERE id = ?';
+      await db.run(sql, [parseInt(taskId)]);
+  
+      res.status(200).json({ message: 'Task deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to delete task' });
+    }
+  });
+  

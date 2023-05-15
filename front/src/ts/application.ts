@@ -173,6 +173,54 @@ export class ApplicationStatusUpdate {
   };
 }
 
+export class ApplicationDelete {
+  private taskContainer: HTMLElement | null;
 
+  constructor() {
+    this.taskContainer = document.querySelector('.task-list');
+  }
 
+  start = (): void => {
+    this.addClearButtonListener();
+  };
+
+  addClearButtonListener(): void {
+    const clearButton = document.querySelector('.clear__btn');
+    if (!clearButton || !this.taskContainer) return;
+
+    clearButton.addEventListener('click', async () => {
+      console.log('Clear button clicked');
+      await this.clearDoneTasks();
+    });
+  }
+
+  clearDoneTasks = async (): Promise<void> => {
+    if (!this.taskContainer) return;
+
+    const doneTasks = this.taskContainer.querySelectorAll('.task.task--done');
+    doneTasks.forEach(async (task, index) => {
+      const taskId = `${index + 1}`;
+      await this.deleteTaskFromDatabase(taskId);
+      task.remove();
+    });
+  };
+
+  deleteTaskFromDatabase = async (taskId: string): Promise<void> => {
+    try {
+      // サーバーサイドのAPIを呼び出してデータベースからタスクを削除する
+      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete task from the database.');
+      }
+
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+}
 
